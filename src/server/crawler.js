@@ -37,7 +37,7 @@ import { chromium } from 'playwright';
     };
 
     const urlsToCrawl = [
-        'https://portfolio-tejas.vercel.app/'
+        'https://www.geeksforgeeks.org/'
     ];
 
     for (const url of urlsToCrawl) {
