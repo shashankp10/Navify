@@ -14,7 +14,7 @@ import { chromium } from 'playwright';
             const links = await page.$$eval('a', anchors => anchors.map(anchor => anchor.href));
             console.log(`Links found on ${url}:`, links);
 
-            const keywordToSearch = 'Development';
+            const keywordToSearch = 'Quantum physics';
 
             for (const link of links) {
                 await crawlEachLink(link, keywordToSearch);
@@ -37,7 +37,7 @@ import { chromium } from 'playwright';
     };
 
     const urlsToCrawl = [
-        'https://www.geeksforgeeks.org/'
+        'https://www.wikipedia.org/'
     ];
 
     for (const url of urlsToCrawl) {

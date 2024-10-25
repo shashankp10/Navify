@@ -17,6 +17,7 @@ router.post('/gpt', async (req, res) => {
                 model: 'gpt-3.5-turbo', 
                 messages: [{ role: 'user', content: prompt }],
                 max_tokens: 100, 
+                
             },
             {
                 headers: {
