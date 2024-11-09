@@ -1,9 +1,14 @@
 import { chromium } from 'playwright';
+import Groq from 'groq-sdk';
+import dotenv from 'dotenv';
 
-(async () => {
+dotenv.config();
+
+export async function startCrawler(keyword, prompt) {
     const browser = await chromium.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
+    const results = [];
 
     const crawl = async (url) => {
         try {
@@ -14,22 +19,35 @@ import { chromium } from 'playwright';
             const links = await page.$$eval('a', anchors => anchors.map(anchor => anchor.href));
             console.log(`Links found on ${url}:`, links);
 
-            const keywordToSearch = 'Quantum physics';
-
             for (const link of links) {
-                await crawlEachLink(link, keywordToSearch);
+                await crawlEachLink(link, keyword, prompt);
             }
         } catch (error) {
             console.error(`Failed to crawl ${url}:`, error.message);
         }
     };
 
-    const crawlEachLink = async (url, keyword) => {
+    const crawlEachLink = async (url, keyword, prompt) => {
         try {
+            console.log(`Crawling link: ${url} with keyword: ${keyword}`); 
             await page.goto(url);
             const content = await page.content();
             if (content.includes(keyword)) {
-                console.log(`Keyword "${keyword}" found on ${url}`);
+                console.log(`Keyword "${keyword}" found in ${url}`);
+                const textContent = await page.evaluate(() => {
+                    const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, article, section');
+                    return Array.from(textElements).map(el => el.textContent.trim()).join('\n');
+                });
+                const { score, relevantContent } = await analyzeContent(textContent, keyword, prompt);
+    
+                const result = {
+                    url,
+                    content: relevantContent,
+                    score
+                };
+                results.push(result);
+                console.log(`Analysis result for ${url}:`, result);
+                return result;
             }
         } catch (error) {
             console.error(`Failed to crawl ${url}:`, error.message);
@@ -37,11 +55,63 @@ import { chromium } from 'playwright';
     };
 
     const urlsToCrawl = [
-        'https://www.wikipedia.org/'
+        'https://www.roboleary.net/frontend/2022/03/28/why-doesnt-the-video-element-have-native-lazy-loading.html'
     ];
+
+    const analyzeContent = async (content, keyword, prompt) => {
+        try {
+            const groq = new Groq({
+                apiKey: process.env.GROQ_API_KEY,
+            });
+
+            const response = await groq.chat.completions.create({
+                messages: [
+                    {
+                        role: "system",
+                        content: `You must respond with valid JSON only, in this exact format:
+                        {
+                            "score": <number between 0-10>,
+                            "relevantContent": "<most relevant text excerpt>"
+                        }`
+                    },
+                    {
+                        role: "user",
+                        content: `Prompt: ${prompt}\nContent: ${content}\nKeyword: ${keyword}`
+                    }
+                ],
+                model: "llama3-8b-8192",
+            });
+
+            let result;
+            try {
+                result = JSON.parse(response.choices[0]?.message?.content?.trim());
+            } catch (parseError) {
+                console.warn('Failed to parse LLM response as JSON:', response.choices[0]?.message?.content);
+                result = { score: 0, relevantContent: '' };
+            }
+
+            return {
+                score: result.score || 0,
+                relevantContent: result.relevantContent || ''
+            };
+        } catch (error) {
+            console.error('Error analyzing content:', error);
+            return { score: 0, relevantContent: '' };
+        }
+    };
 
     for (const url of urlsToCrawl) {
         await crawl(url);
     }
+
+    // sort the result based on score and return top 3
+    const topResults = results
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
     await browser.close();
-})();
+    return topResults;
+}
+// startCrawler("lazy loading", "How to lazy load videos")
+//     .then(results => console.log('Top 3 results:', results))
+//     .catch(error => console.error('Error:', error));
