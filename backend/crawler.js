@@ -4,12 +4,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export async function startCrawler(keyword, prompt) {
+export async function startCrawler(keyword, prompt, url) {
     const browser = await chromium.launch();
     const context = await browser.newContext();
     const page = await context.newPage();
     const results = [];
-
+    
     const crawl = async (url) => {
         try {
             await page.goto(url);
@@ -18,10 +18,11 @@ export async function startCrawler(keyword, prompt) {
 
             const links = await page.$$eval('a', anchors => anchors.map(anchor => anchor.href));
             console.log(`Links found on ${url}:`, links);
-
+            
             for (const link of links) {
                 await crawlEachLink(link, keyword, prompt);
             }
+    
         } catch (error) {
             console.error(`Failed to crawl ${url}:`, error.message);
         }
@@ -54,9 +55,9 @@ export async function startCrawler(keyword, prompt) {
         }
     };
 
-    const urlsToCrawl = [
-        'https://www.roboleary.net/frontend/2022/03/28/why-doesnt-the-video-element-have-native-lazy-loading.html'
-    ];
+    // const urlsToCrawl = [
+    //     'https://www.roboleary.net/frontend/2022/03/28/why-doesnt-the-video-element-have-native-lazy-loading.html'
+    // ];
 
     const analyzeContent = async (content, keyword, prompt) => {
         try {
@@ -89,7 +90,7 @@ export async function startCrawler(keyword, prompt) {
                 console.warn('Failed to parse LLM response as JSON:', response.choices[0]?.message?.content);
                 result = { score: 0, relevantContent: '' };
             }
-
+            console.log("result score : " + result.score + "content : " + result.relevantContent);
             return {
                 score: result.score || 0,
                 relevantContent: result.relevantContent || ''
@@ -100,16 +101,13 @@ export async function startCrawler(keyword, prompt) {
         }
     };
 
-    for (const url of urlsToCrawl) {
-        await crawl(url);
-    }
-
-    // sort the result based on score and return top 3
+    await crawl(url);
+    
     const topResults = results
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
-
     await browser.close();
+    console.log('Final Top 3 Results:', topResults);
     return topResults;
 }
 // startCrawler("lazy loading", "How to lazy load videos")
