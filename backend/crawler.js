@@ -9,24 +9,40 @@ export async function startCrawler(keyword, prompt, url) {
     const context = await browser.newContext();
     const page = await context.newPage();
     const results = [];
+    const visitedUrls = new Set(); 
     
-    const crawl = async (url) => {
+    const crawl = async (url, depth = 1) => {
+        if (depth > 2 || visitedUrls.has(url) || results.length >= 5) {
+            return;
+        }
+        
+        visitedUrls.add(url);
+        console.log(`Crawling depth ${depth}: ${url}`);
+
         try {
             await page.goto(url);
             const title = await page.title();
             console.log(`Title of ${url}: ${title}`);
 
-            const links = await page.$$eval('a', anchors => anchors.map(anchor => anchor.href));
-            console.log(`Links found on ${url}:`, links);
+            // First, analyze the current page
+            await crawlEachLink(url, keyword, prompt);
+
+            // Then get all links for next level
+            const links = await page.$$eval('a', anchors => 
+                anchors.map(anchor => anchor.href)
+                    .filter(href => href.startsWith('http')) // Only keep valid external links
+            );
             
+            // Recursively crawl each link at the next depth
             for (const link of links) {
-                await crawlEachLink(link, keyword, prompt);
+                await crawl(link, depth + 1);
             }
     
         } catch (error) {
             console.error(`Failed to crawl ${url}:`, error.message);
         }
     };
+
 
     const crawlEachLink = async (url, keyword, prompt) => {
         try {
