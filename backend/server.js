@@ -72,7 +72,9 @@ app.post('/api/v1/navify', async (req, res) => {
         res.status(500).json({ error: "An error occurred while extracting the keyword" });
     }
 });
-
+app.get("/hello", (req, res) => {
+    res.json({ message: "Hello, World!" });
+});
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
