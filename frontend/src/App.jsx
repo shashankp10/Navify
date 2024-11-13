@@ -9,7 +9,7 @@ import AboutSection from './Components/AboutSection';
 import CategoriesSection from './Components/CategoriesSection';
 import ContactSection from './Components/ContactSection';
 import Footer from './Components/Footer';
-import PromptBox from './navify/promptBox';
+import PromptBox from './navify/PromptBox';
 
 function App() {
   
