@@ -23,38 +23,52 @@ const PromptBox = () => {
     if (!userInput.trim() || !selectedWebsite) {
       return alert("Please enter a message and select a website.");
     }
-
+  
     const currentInput = userInput;
     setUserInput("");
     setIsLoading(true);
-
+  
     setMessages((prevMessages) => [
       ...prevMessages,
       { type: "user", text: currentInput },
     ]);
-
+  
     try {
       const response = await axios.post("http://localhost:8000/api/v1/navify", {
         prompt: currentInput,
         websiteName: selectedWebsite,
       });
-
+  
       if (response.status === 200 && response.data) {
         const results = response.data.results;
-        const topResult = results[0];
-        const links = results.map((result) => ({
-          url: result.url,
-          label: result.title || result.url,
-        }));
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            type: "bot",
-            text: topResult.relevantContent,
-            links: links,
-          },
-        ]);
+        const relevantResults = results.filter((result) => result.score > 0);
+  
+        if (relevantResults.length === 0) {
+          // No relevant results found
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: "bot",
+              text: "No relevant results found for your query.",
+            },
+          ]);
+        } else {
+          // Handle relevant results
+          const topResult = relevantResults[0];
+          const links = relevantResults.map((result) => ({
+            url: result.url,
+            label: result.title || result.url,
+          }));
+  
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: "bot",
+              text: topResult.relevantContent,
+              links: links,
+            },
+          ]);
+        }
       }
     } catch (error) {
       console.error("Error fetching response:", error.message || error);
@@ -69,6 +83,7 @@ const PromptBox = () => {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="relative">
