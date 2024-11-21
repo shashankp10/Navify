@@ -3,10 +3,10 @@ import { NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 const nav_links = [
-  { path: '/', display: 'Home' },
-  { path: '/about', display: 'About' },
-  { path: '/categories', display: 'Categories' },
-  { path: '/contact', display: 'Contact Us' }
+  { path: "/", display: "Home" },
+  { path: "/about", display: "About" },
+  { path: "/categories", display: "Categories" },
+  { path: "/contact", display: "Contact Us" },
 ];
 
 const Navbar = () => {
@@ -24,25 +24,27 @@ const Navbar = () => {
 
   return (
     <nav className=" z-20 bg-orange-500 flex justify-between items-center p-5 relative ">
-      <div className="text-5xl font-bold text-white" style={{ fontFamily: "'Island Moments', cursive" }}>  <a href="/">StockSeeker</a></div> 
+      <div
+        className="text-5xl font-bold text-white"
+        style={{ fontFamily: "'Island Moments', cursive" }}
+      >
+        {" "}
+        <a href="/">InfoLocator </a>
+      </div>
 
       {/* Desktop Menu */}
-      <ul className="hidden md:flex space-x-8 text-white font-semibold">
+      <ul className="hidden md:flex space-x-8 text-white font-semibold gap-10">
         {nav_links.map((item, index) => (
           <li key={index}>
-            <NavLink to={item.path}
-              className={({ isActive }) => isActive ? "text-yellow-300" : ""}
+            <NavLink
+              to={item.path}
+              className={({ isActive }) => (isActive ? "text-yellow-300" : "")}
             >
               {item.display}
             </NavLink>
           </li>
         ))}
       </ul>
-
-      {/* Desktop Login Button */}
-      <button className="hidden md:block bg-white text-orange-500 font-bold py-2 px-4 rounded-lg">
-        Login
-      </button>
 
       {/* Mobile Menu Button) */}
       <div className="md:hidden flex items-center">
@@ -71,16 +73,15 @@ const Navbar = () => {
                   <NavLink
                     to={item.path}
                     onClick={closeMobileMenu}
-                    className={({ isActive }) => isActive ? "text-yellow-300" : ""}
+                    className={({ isActive }) =>
+                      isActive ? "text-yellow-300" : ""
+                    }
                   >
                     {item.display}
                   </NavLink>
                 </li>
               ))}
             </ul>
-            <button className="bg-white text-orange-500 font-bold py-2 px-4 rounded-lg mt-6">
-              Login
-            </button>
           </div>
         </div>
       )}

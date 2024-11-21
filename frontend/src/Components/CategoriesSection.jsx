@@ -2,11 +2,11 @@ import React from "react";
 
 const categories = [
   { name: "Healthcare", icon: "📈", link: "https://gtecombv.com/" },
-  // { name: "Education", icon: "🎓", link: "/" },
-  // { name: "Tourism", icon: "🧳", link: "/" },
-  // { name: "Food", icon: "🍔", link: "/" },
-  // { name: "Fintech", icon: "💹", link: "/" },
-  // { name: "Legal", icon: "⚖️", link: "/" }
+  { name: "Education", icon: "🎓", link: "/" },
+  { name: "Tourism", icon: "🧳", link: "/" },
+  { name: "Food", icon: "🍔", link: "/" },
+  { name: "Fintech", icon: "💹", link: "/" },
+  { name: "Legal", icon: "⚖️", link: "/" }
 ];
 
 const CategoriesSection = () => {

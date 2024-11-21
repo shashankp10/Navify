@@ -6,12 +6,12 @@ const Footer = () => {
       <div className="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 md:space-x-4">
         {/* logo section */}
         <div className="text-center">
-          <div className="text-5xl font-bold mb-2"style={{ fontFamily: "'Island Moments', cursive" }} >StockSeeker</div>
+          <div className="text-5xl font-bold mb-2"style={{ fontFamily: "'Island Moments', cursive" }} >InfoLocator</div>
           <h3 className="font-semibold">Connect On</h3>
           <div className="flex space-x-4 justify-center mt-2">
-            <a href="#" className="text-xl"><i class="ri-youtube-line"></i></a>
-            <a href="#" className="text-xl"><i class="ri-github-fill"></i></a>
-            <a href="#" className="text-xl"><i class="ri-instagram-line"></i></a>
+            <a href="#" className="text-xl"><i className="ri-youtube-line"></i></a>
+            <a href="#" className="text-xl"><i className="ri-github-fill"></i></a>
+            <a href="#" className="text-xl"><i className="ri-instagram-line"></i></a>
           </div>
         </div>
 
