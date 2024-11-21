@@ -11,15 +11,18 @@ const PromptBox = () => {
   ]);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showUrlInput, setShowUrlInput] = useState(false);
-  const [customUrl, setCustomUrl] = useState("");
+  // const [showUrlInput, setShowUrlInput] = useState(false);
+  // const [customUrl, setCustomUrl] = useState("");
+  const [selectedWebsite, setSelectedWebsite] = useState(null);
 
   const toggleChatbox = () => setIsOpen((prevState) => !prevState);
 
   const handleInputChange = (e) => setUserInput(e.target.value);
 
   const handleSendMessage = async () => {
-    if (!userInput.trim()) return;
+    if (!userInput.trim() || !selectedWebsite) {
+      return alert("Please enter a message and select a website.");
+    }
 
     const currentInput = userInput;
     setUserInput("");
@@ -30,30 +33,25 @@ const PromptBox = () => {
       { type: "user", text: currentInput },
     ]);
 
-    const urlToUse = customUrl || window.location.href;
-
     try {
       const response = await axios.post("http://localhost:8000/api/v1/navify", {
         prompt: currentInput,
-        url: urlToUse,
+        websiteName: selectedWebsite,
       });
 
       if (response.status === 200 && response.data) {
-        const content = response.data.results[0].content;
-
-        const uniqueUrls = [
-          ...new Set(response.data.results.map((result) => result.url)),
-        ];
-        const links = uniqueUrls.map((url) => ({
-          url: url,
-          label: url,
+        const results = response.data.results;
+        const topResult = results[0];
+        const links = results.map((result) => ({
+          url: result.url,
+          label: result.title || result.url,
         }));
 
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             type: "bot",
-            text: content,
+            text: topResult.relevantContent,
             links: links,
           },
         ]);
@@ -69,19 +67,11 @@ const PromptBox = () => {
       ]);
     } finally {
       setIsLoading(false);
-      setCustomUrl("");
-      setShowUrlInput(false);
     }
   };
-  const toggleUrlInput = () => {
-    setShowUrlInput(!showUrlInput);
-    if (!showUrlInput) {
-      setCustomUrl("");
-    }
-  };
+
   return (
     <div className="relative">
-
       <div
         className="fixed bottom-24 right-5 w-[90px] h-[90px] bg-blue-500 border border-white rounded-full flex items-center justify-center cursor-pointer z-10 overflow-hidden"
         onClick={toggleChatbox}
@@ -102,23 +92,7 @@ const PromptBox = () => {
           isHovered ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div
-          className="absolute w-[13px] h-[2px] bg-white"
-          style={{
-            bottom: "30px",
-            left: "104%",
-            transform: "translateX(-50%)",
-          }}
-        ></div>
-        <div
-          className="absolute w-[2px] h-[45px] bg-white"
-          style={{
-            bottom: "-15px",
-            left: "107%",
-            transform: "translateX(-50%)",
-          }}
-        ></div>
-        Click here to fasten your search!
+        <p>Click here to fasten your search!</p>
       </div>
 
       {isOpen && (
@@ -173,10 +147,7 @@ const PromptBox = () => {
                           rel="noopener noreferrer"
                           className="block text-blue-600 hover:text-blue-800 text-sm py-1 px-2 rounded-md hover:bg-blue-50 transition-colors duration-200 overflow-hidden text-ellipsis"
                         >
-                          {/* Truncate long URLs */}
-                          {link.label.length > 50
-                            ? `${link.label.substring(0, 50)}...`
-                            : link.label}
+                          {link.label}
                         </a>
                       ))}
                     </div>
@@ -207,22 +178,31 @@ const PromptBox = () => {
           </div>
 
           <div className="p-2 flex flex-col bottom-0 w-full">
-            <button
-              onClick={toggleUrlInput}
-              className="text-sm text-blue-600 mb-2 hover:text-blue-800 self-start"
-            >
-              {showUrlInput ? "- Hide URL input" : "+ Add custom URL"}
-            </button>
-
-            {showUrlInput && (
-              <input
-                type="url"
-                value={customUrl}
-                onChange={(e) => setCustomUrl(e.target.value)}
-                className="w-full rounded-lg p-2 mb-2 focus:outline-none"
-                placeholder="Enter URL to crawl..."
-              />
-            )}
+            <div className="mb-2">
+              <p className="text-sm text-gray-800 mb-1">Select a website:</p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setSelectedWebsite("innovationcloud")}
+                  className={`px-4 py-2 rounded-lg text-sm ${
+                    selectedWebsite === "innovationcloud"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  InnovationCloud
+                </button>
+                <button
+                  onClick={() => setSelectedWebsite("supabase")}
+                  className={`px-4 py-2 rounded-lg text-sm ${
+                    selectedWebsite === "supabase"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  Supabase
+                </button>
+              </div>
+            </div>
 
             <div className="flex">
               <input
