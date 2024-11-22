@@ -1,4 +1,4 @@
-# Navify Backend
+# Navify
 
 Navify is an AI-powered web extension that transforms the way users interact with websites. By enabling natural language queries, Navify simplifies navigation and content discovery, improving user retention and solving the challenge of poor user experience. The backend system is designed to crawl, process, and serve relevant content efficiently, leveraging powerful tools like Playwright, Meilisearch, and Llama.
 
