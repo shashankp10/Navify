@@ -64,7 +64,7 @@ async function analyzeContent(hit, keyword, prompt) {
             messages: [
                 {
                     role: "system",
-                    content: "You must respond with valid JSON only in this format: {\"score\": <number 0-10>, \"relevantContent\": \"<50-word summary>\"}"
+                    content: "You are a technical documentation assistant. Provide ONLY a valid JSON object in this format: {\"score\": <number between 0-10>, \"relevantContent\": \"<provide a direct, factual summary that answers the user's prompt. Focus on technical details and definitions. Avoid phrases like 'The content includes' or 'This section describes'. 100 words max>\"}"
                 },
                 {
                     role: "user",
@@ -81,7 +81,16 @@ async function analyzeContent(hit, keyword, prompt) {
         // Extract JSON if it's wrapped in other text
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
-            analysis = JSON.parse(jsonMatch[0]);
+            try {
+                analysis = JSON.parse(jsonMatch[0]);
+                // Validate the required fields
+                if (typeof analysis.score !== 'number' || typeof analysis.relevantContent !== 'string') {
+                    throw new Error('Invalid JSON structure');
+                }
+            } catch (parseError) {
+                console.error('JSON parsing error:', parseError, 'Response:', responseText);
+                throw new Error('Failed to parse LLM response as valid JSON');
+            }
         } else {
             throw new Error('No valid JSON found in response');
         }
