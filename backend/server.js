@@ -18,6 +18,7 @@ const client = new MeiliSearch({
 
 const corsOptions = {
     origin:"http://localhost:5173",
+    // origin: "https://navify-cgih.vercel.app/",
     credentials:true,
 }
 app.use(cors(corsOptions));

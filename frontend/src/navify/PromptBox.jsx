@@ -11,9 +11,9 @@ const PromptBox = () => {
   ]);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  // const [showUrlInput, setShowUrlInput] = useState(false);
-  // const [customUrl, setCustomUrl] = useState("");
   const [selectedWebsite, setSelectedWebsite] = useState(null);
+
+  const websites = ["innovationcloud", "supabase", "DJB", "GeeksForGeeks", "Nike"];
 
   const toggleChatbox = () => setIsOpen((prevState) => !prevState);
 
@@ -57,7 +57,7 @@ const PromptBox = () => {
           const topResult = relevantResults[0];
           const links = relevantResults.map((result) => ({
             url: result.url,
-            label: result.title || result.url,
+            label: result.url,
           }));
   
           setMessages((prevMessages) => [
@@ -195,27 +195,20 @@ const PromptBox = () => {
           <div className="p-2 flex flex-col bottom-0 w-full">
             <div className="mb-2">
               <p className="text-sm text-gray-800 mb-1">Select a website:</p>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setSelectedWebsite("innovationcloud")}
-                  className={`px-4 py-2 rounded-lg text-sm ${
-                    selectedWebsite === "innovationcloud"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                >
-                  InnovationCloud
-                </button>
-                <button
-                  onClick={() => setSelectedWebsite("supabase")}
-                  className={`px-4 py-2 rounded-lg text-sm ${
-                    selectedWebsite === "supabase"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                >
-                  Supabase
-                </button>
+              <div className="flex flex-wrap space-x-2">
+                {websites.map((website) => (
+                  <button
+                    key={website}
+                    onClick={() => setSelectedWebsite(website)}
+                    className={`px-2 py-2 my-1 rounded-lg text-sm ${
+                      selectedWebsite === website
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
+                  >
+                    {website.charAt(0).toUpperCase() + website.slice(1)}
+                  </button>
+                ))}
               </div>
             </div>
 
