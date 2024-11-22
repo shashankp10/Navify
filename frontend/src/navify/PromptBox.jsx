@@ -13,7 +13,7 @@ const PromptBox = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedWebsite, setSelectedWebsite] = useState(null);
 
-  const websites = ["innovationcloud", "supabase", "DJB", "GeeksForGeeks", "Nike"];
+  const websites = ["innovationcloud", "supabase", "DJB", "GeeksForGeeks", "Nike", "takeuforward"];
 
   const toggleChatbox = () => setIsOpen((prevState) => !prevState);
 
