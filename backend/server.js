@@ -18,7 +18,7 @@ const client = new MeiliSearch({
 
 const corsOptions = {
     origin:"http://localhost:5173",
-    // origin: "https://navify-cgih.vercel.app/",
+    origin: "https://navify-frontend.vercel.app",
     credentials:true,
 }
 app.use(cors(corsOptions));
@@ -130,5 +130,5 @@ app.post('/api/v1/pre-crawl', async (req, res) => {
 //     res.json({ message: "Hello, World!" });
 // });
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port:${PORT}`);
 });

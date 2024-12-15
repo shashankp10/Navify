@@ -34,7 +34,7 @@ const PromptBox = () => {
     ]);
   
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/navify", {
+      const response = await axios.post("https://navify-black.vercel.app/api/v1/navify", {
         prompt: currentInput,
         websiteName: selectedWebsite,
       });
