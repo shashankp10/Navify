@@ -17,10 +17,9 @@ const client = new MeiliSearch({
   });
 
 const corsOptions = {
-    origin:"http://localhost:5173",
-    origin: "https://navify-frontend.vercel.app",
-    credentials:true,
-}
+  origin: ["http://localhost:5173", "https://navify-frontend.vercel.app"], // Add all allowed origins
+  credentials: true, // Allow cookies and credentials
+};
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -79,21 +78,21 @@ app.post('/api/v1/pre-crawl', async (req, res) => {
     }
 });
 
-  app.post('/api/v1/navify', async (req, res) => {
-    const { prompt, websiteName } = req.body;
-    if (!prompt) {
-      return res.status(400).json({ error: "promptis required" });
-    }
-  
-    try {
-      const keyword = await extractKeyword(prompt);
-      const results = await searchInIndex(websiteName, keyword, prompt);
-      res.json({ keyword, results });
-    } catch (error) {
-      console.error('Error in searching:', error);
-      res.status(500).json({ error: "An error occurred while processing the request." });
-    }
-  });
+app.post('/api/v1/navify', async (req, res) => {
+  const { prompt, websiteName } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ error: "promptis required" });
+  }
+
+  try {
+    const keyword = await extractKeyword(prompt);
+    const results = await searchInIndex(websiteName, keyword, prompt);
+    res.json({ keyword, results });
+  } catch (error) {
+    console.error('Error in searching:', error);
+    res.status(500).json({ error: "An error occurred while processing the request." });
+  }
+});
 
 // app.post('/api/v1/navify', async (req, res) => {
 //     const { prompt, websiteName } = req.body;

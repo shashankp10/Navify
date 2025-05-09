@@ -14,10 +14,10 @@ export async function preCrawlWebsite(url, websiteName) {
     const pages = [];
   
     const crawl = async (url, depth = 1) => {
-      if (depth > 2 || visitedUrls.has(url)) return;
+      if (depth > 3 || visitedUrls.has(url)) return;
   
       visitedUrls.add(url);
-      console.log(`Crawling depth ${depth}: ${url}`);
+      console.log(`Crawling level ${depth}: ${url}`);
   
       try {
         await page.goto(url);
